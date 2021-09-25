@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      *{
+          margin: 0;
+          padding: 0;
+      }
+      li{
+          list-style: none;
+      }
+      .banner{
+          width: 590px;
+          height: 470px;
+          position: relative;
+      }
+      /* 从none-block 不好做动画（傻子才用） */
+      /* 从 opacity  0---1 */
+      .banner .img-item{
+          width: 590px;
+          height: 470px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          
+          z-index: 0;
+      }
+      .banner .img-item.active{
+        
+          z-index: 1;
+      }
+      .banner .img-item img{
+          
+          width: 100%;
+      }
+    
+      .banner .control{
+          position: absolute;
+          bottom: 20px;
+          left: 30px;
+          z-index: 10;
+      }
+      .banner .control>li{
+          width: 20px;
+          height: 20px;
+          float: left;
+          margin-left: 20px;
+      }
+      .prev{
+          width: 50px;
+          height: 50px;
+          position: absolute;
+          top: 240px;
+          left: 0;
+          z-index: 10;
+      }
+      .next{
+          width: 50px;
+          height: 50px;
+          position: absolute;
+          top: 240px;
+          right: 0;
+          z-index: 10;
+      }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <div class="img-wrap">
+            <div class="img-item active">
+                <a href="#">
+                    <img src="../0907/images/1.webp" alt="">
+                </a>
+            </div>
+            <div class="img-item">
+                <a href="#">
+                    <img src="../0907/images/2.jpg" alt="">
+                </a>
+            </div>
+            <div class="img-item">
+                <a href="#">
+                    <img src="../0907/images/3.jpg.webp" alt="">
+                </a>
+            </div>
+        </div>
+        <ul class="control">
+            <li class="active">
+                <button>1</button>
+            </li>
+            <li>
+                <button>2</button>
+            </li>
+            <li>
+                <button>3</button>
+            </li>
+        </ul>
+        <button class="prev">-</button>
+        <button class="next">+</button>
+    </div>
+    <script>
+        var lis=document.querySelectorAll('.banner .control li')
+        var imgs=document.querySelectorAll('.banner .img-item')
+       /*  console.log(imgs) */
+       /*  console.log(lis) */
+       for(var i=0;i<lis.length;i++){
+           lis[i].index=i
+          /*  console.log(i) */
+           lis[i].onclick=function(){
+            for(var k=0;k<lis.length;k++){
+                if(hasClass(lis[k],'active')){
+                    removeClass(lis[k],'active')
+                    removeClass(imgs[k],'active')
+                }
+            }
+            var ind=this.index
+            addClass(this,'active')
+            addClass(imgs[ind],'active')  
+           }
+       }
+
+
+
+         
+       var p=0
+             var imgnum=imgs.length
+             document.querySelector('.next').onclick=function(){
+               p++
+               if(p>imgnum){
+                   p=0
+               }
+                //有切换显示图片
+               for(var k=0;k<lis.length;k++){
+                if(hasClass(lis[k],'active')){
+                    removeClass(lis[k],'active')
+                    removeClass(imgs[k],'active')
+                }
+            }
+            addClass(lis[p],'active')
+            addClass(imgs[p],'active')  
+        }
+        document.querySelector('.prev').oncick=function(){
+               p--
+               if(p<0){
+                   p=imgnum-1
+               }
+                //左切换显示图片
+               for(var k=0;k<lis.length;k++){
+                if(hasClass(lis[k],'active')){
+                    removeClass(lis[k],'active')
+                    removeClass(imgs[k],'active')
+                }
+            }
+            addClass(lis[p],'active')
+            addClass(imgs[p],'active')  
+        }
+            
+             
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // 添加
+        function addClass(ele, className) {
+            // 存在不添加，不存在添加
+            if (!hasClass(ele, className)) {
+                var eleClassName = ele.className;
+                var newClass = eleClassName ? eleClassName + " " + className : className
+                ele.className = newClass;
+            }
+        }
+
+
+        function removeClass(ele, className) {
+            // 存在删除，不存在不删除
+            // 先获取原class ，判断是否存在要删除的class，
+            // 存在的话，将原来的class前后加上空格，然后使用字符串的replace方法进行替换
+            // 替换之后的结果给到元素的className上即可
+            if (hasClass(ele, className)) {
+                // 方案一
+                var oldClassName = " " + ele.className + " ";
+                var re = new RegExp(` ${className}(?= )`, "g")
+                var newClassName = oldClassName.replace(`${className}`, "").trim();
+                ele.className = newClassName;
+
+            }
+        }
+
+        function hasClass(ele, className) {
+            var eleClassName = " " + ele.className + " ";
+            return eleClassName.includes(" " + className + " ")
+        }
+    </script>
+</body>
+</html>
