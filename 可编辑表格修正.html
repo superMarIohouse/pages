@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            /* 盒模型，怪异盒模型border-box 标准盒模型content-box */
+            box-sizing: border-box;
+            /* background-color: #ccc; */
+            padding: 10px;
+        }
+
+        .book-table {
+            border-collapse: collapse;
+        }
+
+        .book-table td,
+        .book-table th {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .book-table td input {
+            padding: 3px;
+            width: 80%;
+        }
+
+        .key_words {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input class="search-title" type="text">
+        <button class="search">搜索</button>
+    </div>
+    <table class="book-table">
+        <thead>
+            <th>序号</th>
+            <th>标题</th>
+            <th>作者</th>
+            <th>重要性</th>
+            <th>阅读数</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <script>
+        var books = [{
+            name: 'Xrrjvu Nchap Ygxhnglkr Eniccrjzi Bbok Vwgk Fvenp',
+            country: 'China',
+            author: 'Eric',
+            important: 2,
+            visit_count: 1231,
+            status: 'published'
+        },
+        {
+            name: 'Xrrjvu Nchap Ygxhnglkr Eniccrjzi Bbok Vwgk Fvenp',
+            country: 'China',
+            author: 'Eric',
+            important: 2,
+            visit_count: 1232,
+            status: 'published'
+        },
+        {
+            name: 'Pqjwfp Vlnbpdocc Imrbbxdps Ygqeos Vcnndvads Nchap Ygxhnglkr Eniccrjzi',
+            country: 'USA',
+            author: 'George',
+            important: 1,
+            visit_count: 1456,
+            status: 'published'
+        },
+        {
+            name: 'Pqjwfp Vlnbpdocc Imrbbxdps Ygqeos Vcnndvads',
+            country: 'USA',
+            author: 'George',
+            important: 1,
+            visit_count: 1456,
+            status: 'draft'
+        },
+        {
+            name: 'Pqjwfp Vlnbpdocc Imrbbxdps Ygqeos Vcnndvads gqeos Vcnndvads',
+            country: 'USA',
+            author: 'George',
+            important: 5,
+            visit_count: 2556,
+            status: 'published'
+        }
+
+        ];
+
+        var bookTable = document.querySelector('.book-table');
+        var tbody = document.querySelector("tbody");
+        var pushed = 'published'
+        function showBooks(books,keyWords) {
+            books.forEach(function (ele,index,array) {
+                var tr = document.createElement("tr");
+                var importantStr = '<span>☆</span>'.repeat(ele.important);
+                // var re = new RegExp(keyWords,'g');
+
+                var titleEleStr = keyWords ? `<span>${ele.name.replace(keyWords, `<i class="key_words">${keyWords}</i>`)}</span>` : `<span>${ele.name}</span>`
+
+
+                tr.innerHTML = `<td class='index'>${index + 1}</td>
+                <td class='title'><p>${titleEleStr}<span>${ele.country}</span></p></td>
+                <td class='author'>${ele.author}</td>
+                <td class='important'>${importantStr}</td>
+                <td class='visit_count'>${ele.visit_count}</td>
+                <td class="status">${ele.status}</td>
+
+
+                <td class='action'><button class="status_btn ${ele.status === 'published' ? 'draft' : 'published'}">${ele.status === 'published' ? '草稿' : '发布'}</button><button class='del'>删除</button> </td>`
+
+                
+                bookTable.querySelector("tbody").appendChild(tr);
+            });
+        }
+        showBooks(books);
+
+
+        var titleEles = document.querySelectorAll(".title");
+        for (var i = 0; i < titleEles.length; i++) {
+            titleEles[i].ondblclick = function () {
+                var title = this.querySelector("p span:first-child").innerText;
+                // this是td
+                var country = this.querySelector("p span:last-child").innerText;
+                this.querySelector("p").remove();
+
+                this.innerHTML = `<input />`
+                // 让input获得焦点
+                this.querySelector("input").focus();
+                this.querySelector("input").value = title
+                // 创建完之后就绑定失去焦点事件
+                this.querySelector("input").addEventListener("blur", function () {
+                    // this是input
+                    var text = this.value;
+                    this.parentNode.innerHTML = `<p><span>${text}</span><span>${country}</span></p>`
+
+                })
+            }
+        }
+        document.querySelector("tbody").onclick = function (event) {
+            var targetEle = event.target
+            var targetClassList = targetEle.classList;
+            var targetEleClassName = targetEle.className;
+            // 删除
+            if (targetEleClassName === 'del') {
+
+                var targetTitle = targetEle.parentNode.parentNode.querySelector(".title span:first-child").innerText;
+
+                console.log(targetTitle);
+                targetEle.parentNode.parentNode.remove();
+                books.splice(books.findIndex(function (ele) {
+                    return ele.name === targetTitle
+                }), 1)
+                // 草稿发布
+            } else if (targetClassList.contains('status_btn')) {
+
+                // 页面中的展示效果
+                // 原数据的处理
+                var status = targetClassList[1];
+
+                var targetTitle = targetEle.parentNode.parentNode.querySelector('.title span:first-child').innerText;
+
+                books.find(function (ele) {
+                    return ele.name === targetTitle
+                }).status = status
+                // 修改页面展示 1.按钮内的文字 2.按钮的class 3.表格中的状态
+                // 按钮的文字替换成和按钮的class相反的
+
+                targetEle.innerText = status === 'draft' ? '发布' : '草稿';
+                // 按钮的类名替换成和class相反的
+                targetClassList.replace(status, status === 'published' ? 'draft' : 'published');
+                // table内的status替换成类名相同的
+
+                targetEle.parentNode.parentNode.querySelector('.status').innerText = status;
+            }
+
+        }
+
+        // 搜索
+
+        document.querySelector(".search").onclick = function (event) {
+            var searchText = document.querySelector(".search-title").value.trim();
+            if (searchText) {
+                var filterBooks = books.filter(function (ele) {
+                    return ele.name.includes(searchText)
+                })
+                document.querySelector("tbody").innerHTML = '';
+                showBooks(filterBooks, searchText);
+            } else {
+                document.querySelector("tbody").innerHTML = '';
+                showBooks(books);
+            }
+        }
+
+
+
+
+
+
+
+
+
+        // targetEle.classList 获取的是目标元素的class名组成的类数组
+        // 该类数组里面 有一些常用属性和方法
+        // add(class 名)
+        // remove(class 名)
+        // toggle(class 名)
+        // contains(class 名)
+        // replace(旧名,新名)
+
+
+    </script>
+</body>
+
+</html>
